@@ -11,12 +11,18 @@ working_dir="$HOME/wireguard"
 mkdir -p "${working_dir}"
 mkdir -p "/etc/wireguard"
 
-echo ---------------------------------------------------------update and upgrade
-sudo apt update -y && sudo apt upgrade -y
-
-echo ----------------------------------------------------------install backports
+echo ----------------------------------------------------------set backports
 echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list
-apt-get update -y
+
+echo ---------------------------------------------------------------------update
+sudo apt update -y
+
+echo ------------------------------------------------------install linux headers
+sudo apt install -y linux-headers-"$(uname -r)"
+
+echo ---------------------------------------------------------install wireguard
+sudo apt install -y wireguard
+sudo modprobe wireguard
 
 echo ----------------------------------------------------------install qrencode
 sudo apt install -y qrencode
