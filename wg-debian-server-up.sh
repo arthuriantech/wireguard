@@ -2,32 +2,28 @@
 # usage:
 #     wg-ubuntu-server-up.sh [<number_of_clients>]
 
+set -e # exit when any command fails
+set -x # enable print all commands
+
 clients_count=${1:-10}
 working_dir="$HOME/wireguard"
 
 mkdir -p "${working_dir}"
 mkdir -p "/etc/wireguard"
 
-echo ------------------------------------------------------install linux headers
-sudo apt install -y linux-headers-"$(uname -r)"
-
-echo ------------------------------------------install software-properties-common
-sudo apt install -y software-properties-common
+echo ---------------------------------------------------------update and upgrade
+sudo apt update -y && sudo apt upgrade -y
 
 echo ----------------------------------------------------------install backports
 echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list
 apt-get update -y
-
-echo ---------------------------------------------------------install wireguard
-sudo apt install -y wireguard
-sudo modprobe wireguard
 
 echo ----------------------------------------------------------install qrencode
 sudo apt install -y qrencode
 
 echo -------------------------------------------------- download wg-genconfig.sh
 cd "${working_dir}" &&
-wget https://raw.githubusercontent.com/drew2a/wireguard/master/wg-genconf.sh
+wget https://raw.githubusercontent.com/drew2a/wireguard/fix_10/wg-genconf.sh
 chmod +x ./wg-genconf.sh
 
 echo ----------------------generate configurations for "${clients_count}" clients
@@ -132,6 +128,8 @@ sudo systemctl start unbound
 
 # show wg
 wg show
+
+set +x # disable print all commands
 
 echo && echo You can use this config: client1.conf
 echo "--------------------------------------------------------↓"
